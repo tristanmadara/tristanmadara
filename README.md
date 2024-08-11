@@ -84,5 +84,68 @@ Les contributions au Daily King Bot sont les bienvenues ! Si vous avez des idée
 N'hésitez pas à demander d'autres modifications ou ajouts si nécessaire !
 
 
-git clone https://github.com/tristanmadara/tristanmadara.git
+git clone https://github.com/tristanmadara/tristanmadara.gitimport discord
+from discord.ext import commands, tasks
+import random
+import asyncio
+
+# Initialisation du bot
+intents = discord.Intents.default()
+bot = commands.Bot(command_prefix='!', intents=intents)
+
+# Liste de questions et réponses
+questions = [
+    {
+        "question": "Quelle est la capitale de la France?",
+        "options": ["A) Paris", "B) Rome", "C) Berlin", "D) Madrid"],
+        "answer": "A"
+    },
+    {
+        "question": "Quel est le plus grand océan du monde?",
+        "options": ["A) Atlantique", "B) Indien", "C) Pacifique", "D) Arctique"],
+        "answer": "C"
+    },
+    {
+        "question": "Qui a écrit 'Les Misérables'?",
+        "options": ["A) Victor Hugo", "B) Émile Zola", "C) Marcel Proust", "D) Gustave Flaubert"],
+        "answer": "A"
+    }
+]
+
+# Commande pour commencer le quiz
+@bot.command(name='quiz')
+async def start_quiz(ctx):
+    question = random.choice(questions)
+    options = "\n".join(question["options"])
+    
+    await ctx.send(f"{question['question']}\n{options}\nRépondez avec A, B, C ou D.")
+
+    def check(m):
+        return m.author == ctx.author and m.channel == ctx.channel and m.content in ['A', 'B', 'C', 'D']
+
+    try:
+        msg = await bot.wait_for('message', check=check, timeout=15)
+        if msg.content == question['answer']:
+            await ctx.send("Correct ! 🎉")
+        else:
+            await ctx.send(f"Incorrect ! La bonne réponse était {question['answer']}.")
+    except asyncio.TimeoutError:
+        await ctx.send("Temps écoulé ! Veuillez réessayer.")
+
+# Tâche pour envoyer un quiz quotidien
+@tasks.loop(hours=24)
+async def daily_quiz():
+    channel = bot.get_channel(YOUR_CHANNEL_ID)  # Remplacez par l'ID de votre canal
+    question = random.choice(questions)
+    options = "\n".join(question["options"])
+    
+    await channel.send(f"Quiz du jour : {question['question']}\n{options}\nRépondez avec A, B, C ou D.")
+
+@daily_quiz.before_loop
+async def before_daily_quiz():
+    await bot.wait_until_ready()
+
+# Démarrer le bot
+bot.run('YOUR_BOT_TOKEN')  # Remplacez par votre token
+
 cd tristanmadara
