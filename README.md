@@ -82,3 +82,7 @@ Les contributions au Daily King Bot sont les bienvenues ! Si vous avez des idée
 3. **Instructions d'installation** : J'ai ajouté des instructions d'installation de base pour aider les utilisateurs à déployer le bot.
 
 N'hésitez pas à demander d'autres modifications ou ajouts si nécessaire !
+
+
+git clone https://github.com/tristanmadara/tristanmadara.git
+cd tristanmadara
